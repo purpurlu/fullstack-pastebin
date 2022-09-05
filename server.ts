@@ -15,7 +15,7 @@ const herokuSSLSetting = { rejectUnauthorized: false }
 const sslSetting = process.env.LOCAL ? false : herokuSSLSetting
 const dbConfig = {
   connectionString: process.env.DATABASE_URL,
-  ssl: sslSetting,
+  ssl: herokuSSLSetting,
   //ssl: false,
 };
 
