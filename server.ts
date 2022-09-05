@@ -15,7 +15,7 @@ const herokuSSLSetting = { rejectUnauthorized: false }
 const sslSetting = process.env.LOCAL ? false : herokuSSLSetting
 const dbConfig = {
   connectionString: process.env.DATABASE_URL,
-  ssl: herokuSSLSetting,
+  ssl: sslSetting,
   //ssl: false,
 };
 
@@ -27,17 +27,38 @@ app.use(cors()) //add CORS support to each following route handler
 const client = new Client(dbConfig);
 client.connect();
 
-app.get("/", async (req, res) => {
-  const dbres = await client.query('select * from categories');
-  res.json(dbres.rows);
+app.get("/pastes", async (req, res) => {
+  try {
+    const dbres = await client.query('select title, body from pastes LIMIT 10');
+    res.json(dbres.rows);
+  }
+  catch (err) {
+    console.error(err)
+  }
+  
 });
 
+app.post("/pastes", async(req, res) => {
+  try {
+
+      const {title, body} = req.body
+      const newPaste = await client.query("INSERT INTO pastes (title, body) VALUES($1, $2) RETURNING *", [title, body])
+      res.json(newPaste.rows)
+    }
+  catch (err) {
+    console.error(err)
+  }
+})
 
 //Start the server on the given port
 const port = process.env.PORT;
 if (!port) {
   throw 'Missing PORT environment variable.  Set it in .env file.';
 }
+
+
+
+
 app.listen(port, () => {
   console.log(`Server is up and running on port ${port}`);
 });
