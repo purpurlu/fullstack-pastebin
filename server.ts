@@ -33,7 +33,7 @@ client.connect();
 
 app.get("/pastes", async (req, res) => {
   try {
-    const dbres = await client.query('select title, body from pastes ORDER BY id_paste DESC LIMIT 10');
+    const dbres = await client.query('select title, body from pastes ORDER BY id DESC LIMIT 10');
     res.status(200).json(dbres.rows);
   }
   catch (err) {
